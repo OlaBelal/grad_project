@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Tour } from '../types';
-import tiaraImage from '../assets/images/tiara.png';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { Tour } from "../types";
+import tiaraImage from "../assets/images/tiara.png";
 
 interface BookingFormProps {
   tour: Tour;
@@ -10,10 +10,10 @@ interface BookingFormProps {
 const BookingForm: React.FC<BookingFormProps> = ({ tour }) => {
   const [numberOfAdults, setNumberOfAdults] = useState(1);
   const [numberOfChildren, setNumberOfChildren] = useState(0);
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [confirmEmail, setConfirmEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [confirmEmail, setConfirmEmail] = useState("");
+  const [phone, setPhone] = useState("");
   const navigate = useNavigate();
 
   const handleAdultsChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -34,26 +34,52 @@ const BookingForm: React.FC<BookingFormProps> = ({ tour }) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    navigate('/payment', {
+
+    console.log("Book Now clicked");
+    console.log("Navigating with:", {
+      title: tour.title,
+      price: calculateTotalPrice(),
+      tourLocation: tour.destinationCity,
+      startDate: tour.startDate,
+      endDate: tour.endDate,
+      travelId: tour.id,
+      numberOfAdults,
+      numberOfChildren,
+      customerInfo: {
+        name,
+        email,
+        phone,
+      },
+    });
+
+    console.log("Tour:", tour);
+    console.log("Name:", name, "Email:", email, "Phone:", phone);
+
+    navigate("/payment", {
       state: {
         title: tour.title,
         price: calculateTotalPrice(),
-        tourLocation: tour.location,
+        tourLocation: tour.destinationCity,
+        startDate: tour.startDate,
+        endDate: tour.endDate,
+        travelId: tour.id,
         numberOfAdults,
         numberOfChildren,
         customerInfo: {
           name,
           email,
-          phone
-        }
-      }
+          phone,
+        },
+      },
     });
   };
 
   return (
     <div className="w-80 sticky top-8 self-start">
       <div className="bg-gray-100 p-6 rounded-lg h-auto">
-        <h2 className="text-2xl font-bold text-gray-900 mb-4">Book This Tour</h2>
+        <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          Book This Tour
+        </h2>
 
         {/* Booking Form */}
         <form className="space-y-4" onSubmit={handleSubmit}>

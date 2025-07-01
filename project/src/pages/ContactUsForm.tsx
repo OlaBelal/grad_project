@@ -1,6 +1,6 @@
-import React, { useState, ChangeEvent, FormEvent } from 'react';
+import  { useState, ChangeEvent, FormEvent } from 'react';
 
-// Import images from the assets/images directory
+//  images from the assets/images directory
 import coverImage from '../assets/images/1.png';
 import contactUsIllustration1 from '../assets/images/contact-us-img-1.png';
 import contactUsIllustration3 from '../assets/images/contact-us-img-3.png';

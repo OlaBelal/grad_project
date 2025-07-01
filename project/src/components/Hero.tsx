@@ -3,11 +3,13 @@ import { Search } from 'lucide-react';
 
 const Hero = () => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [searchType, setSearchType] = useState('Travels'); // Default search type
+  const [selectedCategory, setSelectedCategory] = useState('');
 
-  const handleSearch = () => {
-    // Implement search logic here based on searchTerm and searchType
-    console.log('Searching for:', searchTerm, 'in', searchType);
+  const handleSearch = (category?: string) => {
+    const searchTermValue = searchTerm.trim();
+    if (searchTermValue || category) {
+      console.log('Searching for:', searchTermValue, 'in', category || selectedCategory);
+    }
   };
 
   return (
@@ -28,20 +30,30 @@ const Hero = () => {
             No matter where you're going to, we'll take you there
           </h1>
 
-          {/* Search Bar with Dropdown */}
+          {/* Category Buttons (above search bar) */}
+          <div className="flex space-x-4 mb-4">
+            <SearchButton
+              label="Events"
+              onClick={() => setSelectedCategory('Events')}
+              isActive={selectedCategory === 'Events'}
+            />
+            <SearchButton
+              label="Travels"
+              onClick={() => setSelectedCategory('Travels')}
+              isActive={selectedCategory === 'Travels'}
+            />
+            <SearchButton
+              label="Companies"
+              onClick={() => setSelectedCategory('Companies')}
+              isActive={selectedCategory === 'Companies'}
+            />
+          </div>
+
+          {/* Search Bar */}
           <div className="flex items-center bg-white rounded-md shadow-md">
-            <select
-              value={searchType}
-              onChange={(e) => setSearchType(e.target.value)}
-              className="rounded-l-md border-r border-gray-300 py-3 pl-4 pr-2 focus:outline-none"
-            >
-              <option value="Events">Events</option>
-              <option value="Travels">Travels</option>
-              <option value="Companies">Companies</option>
-            </select>
             <input
               type="text"
-              placeholder={`Search ${searchType}...`}
+              placeholder="Search..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full px-4 py-3 focus:outline-none"
@@ -68,6 +80,17 @@ const Hero = () => {
     </div>
   );
 };
+
+const SearchButton = ({ label, onClick, isActive }) => (
+  <button
+    onClick={onClick}
+    className={`bg-${isActive ? 'orange-500 text-white' : 'gray-200 text-gray-700'} px-6 py-3 rounded-md hover:bg-${
+      isActive ? 'orange-600' : 'gray-300'
+    } transition-colors`}
+  >
+    {label}
+  </button>
+);
 
 const CategoryButton = ({ icon, label }: { icon: string; label: string }) => (
   <button className="flex flex-col items-center space-y-2 text-white hover:text-orange-500 transition-colors">

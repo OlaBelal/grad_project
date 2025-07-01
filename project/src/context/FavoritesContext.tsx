@@ -1,17 +1,9 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-
-interface FavoriteTour {
-  id: number;
-  title: string;
-  image: string;
-  companyName: string;
-  price: number;
-  location: string;
-}
+import { Tour } from '../types'; // استيراد واجهة Tour من الملف المشترك
 
 interface FavoritesContextType {
-  favorites: FavoriteTour[];
-  toggleFavorite: (tour: FavoriteTour) => void;
+  favorites: Tour[]; // تغيير من FavoriteTour[] إلى Tour[]
+  toggleFavorite: (tour: Tour) => void; // تغيير المعامل إلى Tour
   isFavorite: (id: number) => boolean;
 }
 
@@ -22,7 +14,7 @@ const FavoritesContext = createContext<FavoritesContextType>({
 });
 
 export const FavoritesProvider: React.FC<{children: React.ReactNode}> = ({ children }) => {
-  const [favorites, setFavorites] = useState<FavoriteTour[]>(() => {
+  const [favorites, setFavorites] = useState<Tour[]>(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('favorites');
       return saved ? JSON.parse(saved) : [];
@@ -34,7 +26,7 @@ export const FavoritesProvider: React.FC<{children: React.ReactNode}> = ({ child
     localStorage.setItem('favorites', JSON.stringify(favorites));
   }, [favorites]);
 
-  const toggleFavorite = (tour: FavoriteTour) => {
+  const toggleFavorite = (tour: Tour) => {
     setFavorites(prev => 
       prev.some(fav => fav.id === tour.id)
         ? prev.filter(fav => fav.id !== tour.id)

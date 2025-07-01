@@ -2,25 +2,24 @@ import React from 'react';
 import { Heart, Star, MapPin } from 'lucide-react';
 import { useFavorites } from '../context/FavoritesContext';
 import { useNavigate } from 'react-router-dom';
-
+import { Tour } from '../types';
+import { API_BASE_URL } from '../services/apiConfig';
 const Favorites = () => {
   const { favorites, toggleFavorite } = useFavorites();
   const navigate = useNavigate();
 
-  const handleSeeDetails = (tour: any) => {
+  const handleSeeDetails = (tour: Tour) => {
     navigate('/travel-with-us', {
-      state: {
-        tour,
-      },
+      state: { tour },
     });
   };
 
-  const handleBookNow = (tour: any) => {
+  const handleBookNow = (tour: Tour) => {
     navigate('/payment', {
       state: {
-        title: tour.title,
+        title: tour.title || tour.name,
         price: tour.price,
-        location: tour.location,
+        location: tour.location || tour.destination,
       },
     });
   };
@@ -51,20 +50,35 @@ const Favorites = () => {
 
                 <div className="relative">
                   <img
-                    src={tour.image}
-                    alt={tour.title}
-                    className="w-full h-64 object-cover"
-                  />
+                      src={
+                        Array.isArray(tour.imageUrls) 
+                          ? tour.imageUrls[0]?.startsWith('http') 
+                            ? tour.imageUrls[0] 
+                            : `${API_BASE_URL}/${tour.imageUrls[0]}`
+                          : tour.imageUrls?.startsWith('http')
+                            ? tour.imageUrls
+                            : `${API_BASE_URL}/${tour.imageUrls}`
+                      }
+                      alt={tour.title || tour.name}
+                      className="w-full h-64 object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = `${API_BASE_URL}/default-tour.jpg`;
+                      }}
+                    />
                   <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold text-orange-500">
                     £{tour.price}
                   </div>
                 </div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
-                    <h3 className="text-xl font-semibold text-gray-900">{tour.title}</h3>
+                    <h3 className="text-xl font-semibold text-gray-900">
+                      {tour.title || tour.name}
+                    </h3>
                     <div className="flex items-center">
                       <MapPin size={16} className="mr-1 text-gray-600" />
-                      <span className="text-sm text-gray-600">{tour.location}</span>
+                      <span className="text-sm text-gray-600">
+                        {tour.location || tour.destination}
+                      </span>
                     </div>
                   </div>
                   <div className="flex space-x-4">

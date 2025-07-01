@@ -36,25 +36,27 @@ const Footer = () => {
               <h5 className="text-uppercase text-black text-2xl mb-4">Company</h5>
               <ul className="list-unstyled">
                 <li>
+                  
+                </li>
+                <li>
+                  <a href="/companies" className="text-dark no-underline text-base" aria-label="Campanies">
+                     Our partinars
+                  </a>
+                </li>
+                <li>
+                  <a href="/travels" className="text-dark no-underline text-base" aria-label="Travels">
+                    Travels
+                  </a>
+                </li>
+                <li>
+                  <a href="/events" className="text-dark no-underline text-base" aria-label="Events">
+                    Events 
+                  </a>
+                  </li>
                   <a href="/about-us" className="text-dark no-underline text-base" aria-label="About Us">
                     About Us
                   </a>
-                </li>
-                <li>
-                  <a href="/careers" className="text-dark no-underline text-base" aria-label="Careers">
-                    Careers
-                  </a>
-                </li>
-                <li>
-                  <a href="/blog" className="text-dark no-underline text-base" aria-label="Blog">
-                    Blog
-                  </a>
-                </li>
-                <li>
-                  <a href="/pricing" className="text-dark no-underline text-base" aria-label="Pricing">
-                    Pricing
-                  </a>
-                </li>
+                
               </ul>
             </div>
 
@@ -87,7 +89,7 @@ const Footer = () => {
                 Email: <a href="mailto:info@travelwebsite.com" className="text-dark">info@travelwebsite.com</a>
                 <br />
                 <i className="fas fa-phone text-[#DF6951] mr-2"></i>
-                Phone: <a href="tel:+1234567890" className="text-dark">+1 234 567 890</a>
+                Phone: <a href="tel:+1234567890" className="text-dark">+20 1091640114</a>
               </p>
             </div>
           </div>
