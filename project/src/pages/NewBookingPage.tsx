@@ -7,7 +7,6 @@ const NewBookingPage = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Support both state and query params for travelId
   const travelIdFromState = location.state?.travelId;
   const searchParams = new URLSearchParams(location.search);
   const travelIdFromQuery = parseInt(searchParams.get("travelId") || "0");
@@ -17,15 +16,11 @@ const NewBookingPage = () => {
     travelId: resolvedTravelId,
     name: "",
     phone: "",
+    nationalId: "",
     numberOfAdults: 1,
     numberOfChildren: 0,
+    numberOfChildrenUnderFive: 0,
   });
-
-  useEffect(() => {
-    console.log("Location.state:", location.state);
-    console.log("Location.search:", location.search);
-    console.log("Resolved travelId:", resolvedTravelId);
-  }, [location, resolvedTravelId]);
 
   const [pricePerAdult, setPricePerAdult] = useState(0);
   const [pricePerChild, setPricePerChild] = useState(0);
@@ -59,11 +54,13 @@ const NewBookingPage = () => {
   useEffect(() => {
     const total =
       formData.numberOfAdults * pricePerAdult +
-      formData.numberOfChildren * pricePerChild;
+      formData.numberOfChildren * pricePerChild +
+      formData.numberOfChildrenUnderFive * Math.floor(pricePerChild * 0.5);
     setTotalAmount(total);
   }, [
     formData.numberOfAdults,
     formData.numberOfChildren,
+    formData.numberOfChildrenUnderFive,
     pricePerAdult,
     pricePerChild,
   ]);
@@ -88,13 +85,10 @@ const NewBookingPage = () => {
 
     const bookingPayload = {
       travelId: formData.travelId,
-      quantity: formData.numberOfAdults + formData.numberOfChildren,
-      customer: {
-        name: formData.name,
-        phone: formData.phone,
-        numberOfAdults: formData.numberOfAdults,
-        numberOfChildren: formData.numberOfChildren,
-      },
+      totalquantity: formData.numberOfAdults + formData.numberOfChildren,
+      childrenUnderFiveNum: formData.numberOfChildrenUnderFive,
+      nationalId: formData.nationalId,
+      phoneNumber: formData.phone,
     };
 
     try {
@@ -167,6 +161,24 @@ const NewBookingPage = () => {
         <div>
           <label
             className="block text-sm font-medium mb-1"
+            htmlFor="nationalId"
+          >
+            National ID
+          </label>
+          <input
+            type="text"
+            name="nationalId"
+            id="nationalId"
+            value={formData.nationalId}
+            onChange={handleChange}
+            required
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
             htmlFor="numberOfAdults"
           >
             Number of Adults
@@ -195,6 +207,24 @@ const NewBookingPage = () => {
             name="numberOfChildren"
             id="numberOfChildren"
             value={formData.numberOfChildren}
+            onChange={handleChange}
+            min={0}
+            className="w-full border px-3 py-2 rounded"
+          />
+        </div>
+
+        <div>
+          <label
+            className="block text-sm font-medium mb-1"
+            htmlFor="numberOfChildrenUnderFive"
+          >
+            Children Under 5
+          </label>
+          <input
+            type="number"
+            name="numberOfChildrenUnderFive"
+            id="numberOfChildrenUnderFive"
+            value={formData.numberOfChildrenUnderFive}
             onChange={handleChange}
             min={0}
             className="w-full border px-3 py-2 rounded"
