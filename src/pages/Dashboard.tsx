@@ -1,5 +1,5 @@
 // src/pages/Dashboard.tsx
-
+import React from 'react';
 import { authService } from '../services/authService';
 
 const Dashboard = () => {

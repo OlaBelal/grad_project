@@ -1,12 +1,12 @@
-
 // services/schedulerService.ts
 import { sendInteractionsToAPI } from './apiService';
 
-const ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+const ONE_WEEK = 7 * 24 * 60 * 60 * 1000; // أسبوع واحد بالميلي ثانية
 
-let submissionInterval: number | null = null;
+let submissionInterval: number | null = null; // تغيير النوع من NodeJS.Timeout إلى number
 
 export const setupWeeklySubmission = (userId: string): (() => void) => {
+  // تنظيف أي فترات زمنية موجودة مسبقاً
   if (submissionInterval !== null) {
     clearInterval(submissionInterval);
   }
@@ -20,8 +20,10 @@ export const setupWeeklySubmission = (userId: string): (() => void) => {
     }
   };
 
+  // الإرسال الفوري
   submitData();
   
+  // الإرسال الدوري
   submissionInterval = window.setInterval(submitData, ONE_WEEK);
 
   return () => {

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { GoogleOAuthProvider, GoogleLogin } from '@react-oauth/google';
-import { useTranslation } from 'react-i18next';
 import travelImage from "../assets/images/image 1.png";
 import { authService } from "../services/authService";
 
@@ -26,9 +25,7 @@ interface GoogleCredentialResponse {
 }
 
 const SignUp = () => {
-  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const location = useLocation();
   const [formData, setFormData] = useState<FormData>({
     name: "",
     email: "",
@@ -60,32 +57,27 @@ const SignUp = () => {
   const validateForm = (): boolean => {
     const newErrors: Errors = {};
 
-    // Name validation - allows letters, spaces, apostrophes, hyphens, and Arabic characters
     if (!formData.name.trim()) {
-      newErrors.name = t('signUp.errors.nameRequired');
-    } else if (!/^[\p{L}\s'-]+$/u.test(formData.name.trim())) {
-      newErrors.name = t('signUp.errors.invalidName');
+      newErrors.name = "Name is required";
     }
 
-    // Email validation
     if (!formData.email.trim()) {
-      newErrors.email = t('signUp.errors.emailRequired');
+      newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-      newErrors.email = t('signUp.errors.invalidEmail');
+      newErrors.email = "Please enter a valid email address";
     }
 
-    // Password validation
     if (!formData.password) {
-      newErrors.password = t('signUp.errors.passwordRequired');
-    } else if (formData.password.length < 8) {
-      newErrors.password = t('signUp.errors.passwordTooShort');
+      newErrors.password = "Password is required";
+    } else if (!authService.validatePassword(formData.password)) {
+      newErrors.password =
+        "Password must be at least 8 characters long and include letters, numbers, and special characters.";
     }
 
-    // Confirm password validation
     if (!formData.confirmPassword) {
-      newErrors.confirmPassword = t('signUp.errors.confirmPasswordRequired');
+      newErrors.confirmPassword = "Please confirm your password";
     } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = t('signUp.errors.passwordsNotMatch');
+      newErrors.confirmPassword = "Passwords do not match";
     }
 
     setErrors(newErrors);
@@ -99,28 +91,14 @@ const SignUp = () => {
     if (validateForm()) {
       try {
         setIsLoading(true);
-        const response = await authService.register({
-          userName: formData.name.replace(/\s+/g, ''), 
-
-          email: formData.email.trim(),
+        await authService.register({
+          name: formData.name,
+          email: formData.email,
           password: formData.password
         });
-        
-        // Store user data
-        const user = {
-          id: response.id,
-          name: response.name,
-          email: response.email,
-          phone: '',
-          token: response.token
-        };
-        localStorage.setItem('currentUser', JSON.stringify(user));
-        
-        // Redirect after successful registration
-        const redirectPath = location.state?.from?.pathname || "/AccountPage";
-        navigate(redirectPath, { replace: true });
+        navigate("/dashboard");
       } catch (error: any) {
-        setApiError(error.message || t('signUp.errors.registrationFailed'));
+        setApiError(error.message || "Registration failed. Please try again.");
       } finally {
         setIsLoading(false);
       }
@@ -132,39 +110,25 @@ const SignUp = () => {
       setIsLoading(true);
       
       if (!credentialResponse.credential) {
-        throw new Error(t('signUp.errors.noGoogleCredential'));
+        throw new Error('No credential received from Google');
       }
       
-      const user = await authService.googleLogin(credentialResponse.credential);
-      
-      // Store Google user data
-      const completeUser = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: '',
-        token: user.token,
-        avatar: user.avatar
-      };
-      localStorage.setItem('currentUser', JSON.stringify(completeUser));
-      
-      // Redirect after successful Google signup
-      const redirectPath = location.state?.from?.pathname || "/AccountPage";
-      navigate(redirectPath, { replace: true });
+      await authService.googleLogin(credentialResponse.credential);
+      navigate("/dashboard");
     } catch (error: any) {
-      setApiError(error.message || t('signUp.errors.googleSignUpFailed'));
+      setApiError(error.message || "Google sign up failed. Please try again.");
     } finally {
       setIsLoading(false);
     }
   };
 
   return (
-    <div className={`flex h-screen bg-gray-100 ${i18n.language === 'ar' ? 'text-right' : 'text-left'}`}>
+    <div className="flex h-screen bg-gray-100">
       {/* Left Half: Image */}
       <div className="hidden md:flex flex-1 justify-center items-center bg-white">
         <img
           src={travelImage}
-          alt={t('signUp.travelImageAlt')}
+          alt="Travel"
           className="max-w-full max-h-full object-cover"
         />
       </div>
@@ -173,10 +137,10 @@ const SignUp = () => {
       <div className="flex-1 flex flex-col justify-center items-center bg-white p-4">
         <div className="w-full max-w-md">
           <h1 className="text-center mb-2 font-yesteryear text-5xl text-[#DF6951]">
-            {t('signUp.title')}
+            Sign Up
           </h1>
           <p className="text-center mb-5 text-gray-600 text-lg font-volkhov">
-            {t('signUp.subtitle')}
+            Pack your bags and explore the world!
           </p>
           
           {apiError && (
@@ -189,7 +153,7 @@ const SignUp = () => {
             {/* Name Field */}
             <div className="mb-4">
               <label htmlFor="name" className="block mb-2 text-gray-700">
-                {t('signUp.nameLabel')}
+                Name
               </label>
               <input
                 type="text"
@@ -201,7 +165,6 @@ const SignUp = () => {
                   errors.name ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-[#DF6951]'
                 }`}
                 disabled={isLoading}
-                placeholder={t('signUp.namePlaceholder')}
               />
               {errors.name && (
                 <p className="text-red-500 text-xs mt-1">{errors.name}</p>
@@ -211,7 +174,7 @@ const SignUp = () => {
             {/* Email Field */}
             <div className="mb-4">
               <label htmlFor="email" className="block mb-2 text-gray-700">
-                {t('signUp.emailLabel')}
+                Email
               </label>
               <input
                 type="email"
@@ -223,7 +186,6 @@ const SignUp = () => {
                   errors.email ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-[#DF6951]'
                 }`}
                 disabled={isLoading}
-                placeholder={t('signUp.emailPlaceholder')}
               />
               {errors.email && (
                 <p className="text-red-500 text-xs mt-1">{errors.email}</p>
@@ -233,7 +195,7 @@ const SignUp = () => {
             {/* Password Field */}
             <div className="mb-4">
               <label htmlFor="password" className="block mb-2 text-gray-700">
-                {t('signUp.passwordLabel')}
+                Password
               </label>
               <input
                 type="password"
@@ -245,7 +207,6 @@ const SignUp = () => {
                   errors.password ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-[#DF6951]'
                 }`}
                 disabled={isLoading}
-                placeholder={t('signUp.passwordPlaceholder')}
               />
               {errors.password && (
                 <p className="text-red-500 text-xs mt-1">{errors.password}</p>
@@ -255,7 +216,7 @@ const SignUp = () => {
             {/* Confirm Password Field */}
             <div className="mb-6">
               <label htmlFor="confirm-password" className="block mb-2 text-gray-700">
-                {t('signUp.confirmPasswordLabel')}
+                Confirm Password
               </label>
               <input
                 type="password"
@@ -267,7 +228,6 @@ const SignUp = () => {
                   errors.confirmPassword ? 'border-red-500 focus:ring-red-200' : 'border-gray-300 focus:ring-[#DF6951]'
                 }`}
                 disabled={isLoading}
-                placeholder={t('signUp.confirmPasswordPlaceholder')}
               />
               {errors.confirmPassword && (
                 <p className="text-red-500 text-xs mt-1">{errors.confirmPassword}</p>
@@ -282,24 +242,24 @@ const SignUp = () => {
               }`}
               disabled={isLoading}
             >
-              {isLoading ? t('signUp.creatingAccount') : t('signUp.signUpButton')}
+              {isLoading ? 'Creating Account...' : 'Sign Up'}
             </button>
 
             {/* Divider */}
             <div className="flex items-center my-6">
               <div className="flex-grow border-t border-gray-300"></div>
-              <span className="mx-4 text-gray-500">{t('signUp.orDivider')}</span>
+              <span className="mx-4 text-gray-500">or</span>
               <div className="flex-grow border-t border-gray-300"></div>
             </div>
 
             {/* Google Sign Up Button */}
             <div className="mb-6">
-              <GoogleOAuthProvider clientId="YOUR_GOOGLE_CLIENT_ID">
+              <GoogleOAuthProvider clientId="822773664134-n09666thqoc67ee4rhkfjetb51ep0vg5.apps.googleusercontent.com">
                 <div className={`${isLoading ? 'opacity-70 pointer-events-none' : ''}`}>
                   <GoogleLogin
                     onSuccess={handleGoogleSignUp}
                     onError={() => {
-                      setApiError(t('signUp.errors.googleSignUpFailed'));
+                      setApiError("Google sign up failed. Please try again.");
                     }}
                     width="100%"
                     size="large"
@@ -314,14 +274,14 @@ const SignUp = () => {
 
             {/* Login Redirect */}
             <p className="text-center text-gray-600 text-sm">
-              {t('signUp.alreadyHaveAccount')}{" "}
+              Already have an account?{" "}
               <button
                 type="button"
                 onClick={handleLoginRedirect}
                 className="text-[#DF6951] hover:text-[#C6533E] font-bold"
                 disabled={isLoading}
               >
-                {t('signUp.loginLink')}
+                Log in
               </button>
             </p>
           </form>

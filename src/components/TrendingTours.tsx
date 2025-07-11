@@ -1,11 +1,11 @@
-import { useEffect, useState } from 'react';
+import  { useEffect, useState } from 'react';
 import { Star, MapPin, Heart } from 'lucide-react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useFavorites } from '../context/FavoritesContext';
 import { saveInteraction } from '../services/localStorageService';
 import { calculateTotal } from '../services/calculationService';
 import { UserInteraction } from '../interfaces/userInteraction';
-import { authService } from '../services/authService';
+import { authService } from '../services/authService'
 import { fetchTours } from '../services/travelService';
 import { Tour } from '../types';
 import { API_BASE_URL } from '../services/apiConfig';
@@ -17,7 +17,6 @@ const TrendingTours = () => {
   const [tours, setTours] = useState<Tour[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const userId = authService.getCurrentUser()?.id || 'anonymous';
 
   useEffect(() => {
     const loadTours = async () => {
@@ -49,13 +48,12 @@ const TrendingTours = () => {
   const handleBookNow = (tour: Tour) => {
     requireAuth(() => {
       const interaction: UserInteraction = {
-        userId,
         id: tour.id.toString(),
         type: 'travel',
         checkout: 1,
         favourite: isFavorite(tour.id),
         booked: true,
-        total: tour.price
+        total: 0
       };
       
       interaction.total = calculateTotal(interaction);
@@ -63,40 +61,35 @@ const TrendingTours = () => {
       
       navigate('/payment', {
         state: {
-          title: tour.title,
+          title: tour.title ,
           price: tour.price,
-          location: tour.destinationCity,
+          location:  tour.destinationCity,
         },
       });
     });
   };
 
   const handleFavorite = (tour: Tour) => {
-    requireAuth(() => {
-      const isCurrentlyFavorite = isFavorite(tour.id);
-      toggleFavorite({
-        ...tour,
-        image: tour.imageUrls?.[0] || `${API_BASE_URL}/default-tour.jpg`
-      }); 
-      
-      const interaction: UserInteraction = {
-        userId,
-        id: tour.id.toString(),
-        type: 'travel',
-        checkout: 0,
-        favourite: !isCurrentlyFavorite,
-        booked: false,
-        total: 0
-      };
-      
-      interaction.total = calculateTotal(interaction);
-      saveInteraction(interaction);
-    });
-  };
+  requireAuth(() => {
+    const isCurrentlyFavorite = isFavorite(tour.id);
+    toggleFavorite(tour); // لم نعد بحاجة لإنشاء كائن جديد
+    
+    const interaction: UserInteraction = {
+      id: tour.id.toString(),
+      type: 'travel',
+      checkout: 0,
+      favourite: !isCurrentlyFavorite,
+      booked: false,
+      total: 0
+    };
+    
+    interaction.total = calculateTotal(interaction);
+    saveInteraction(interaction);
+  });
+};
 
   const handleSeeDetails = (tour: Tour) => {
     const interaction: UserInteraction = {
-      userId,
       id: tour.id.toString(),
       type: 'travel',
       checkout: 0,
@@ -186,17 +179,13 @@ const TrendingTours = () => {
                 </button>
 
                 <div className="relative">
-                  <img
+                <img
   src={
-    tour.coverImageUrl && tour.coverImageUrl.trim() !== ''
-      ? tour.coverImageUrl.startsWith('http')
-        ? tour.coverImageUrl
-        : `${API_BASE_URL}/${tour.coverImageUrl}`
-      : tour.imageUrls?.length > 0
-        ? tour.imageUrls[0].startsWith('http')
-          ? tour.imageUrls[0]
-          : `${API_BASE_URL}/${tour.imageUrls[0]}`
-        : `${API_BASE_URL}/default-tour.jpg`
+    tour.imageUrls?.length > 0
+      ? tour.imageUrls[0].startsWith('http')
+        ? tour.imageUrls[0]
+        : `${API_BASE_URL}/${tour.imageUrls[0]}`
+      : `${API_BASE_URL}/default-tour.jpg`
   }
   alt={tour.title}
   className="w-full h-64 object-cover"
@@ -204,24 +193,23 @@ const TrendingTours = () => {
     (e.target as HTMLImageElement).src = `${API_BASE_URL}/default-tour.jpg`;
   }}
 />
-
-                  <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold text-orange-500">
-                    £{tour.price}
-                  </div>
-                </div>
+  <div className="absolute top-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-semibold text-orange-500">
+    £{tour.price}
+  </div>
+</div>
                 <div className="p-6">
                   <div className="flex items-center justify-between mb-2">
                     <h3 className="text-xl font-semibold text-gray-900">
-                      {tour.title}
+                      {tour.title || tour.title}
                     </h3>
                     <div className="flex items-center">
                       <Star size={16} className="text-yellow-400 fill-current" />
-                      <span className="ml-1 text-sm text-gray-600">{tour.rating?.toFixed(1) || '0.0'}</span>
+                      <span className="ml-1 text-sm text-gray-600">{tour.rating?.toFixed(1)}</span>
                     </div>
                   </div>
                   <div className="flex items-center text-gray-600 mb-4">
                     <MapPin size={16} className="mr-1" />
-                    <span className="text-sm">{tour.destinationCity}</span>
+                    <span className="text-sm">{  tour.destinationCity}</span>
                   </div>
                   <div className="flex space-x-4">
                     <button
@@ -229,7 +217,7 @@ const TrendingTours = () => {
                       onClick={() => tour.availableSeats > 0 && handleBookNow(tour)}
                       disabled={tour.availableSeats <= 0}
                     >
-                      {tour.availableSeats > 0 ? 'Book Now' : 'Sold Out'}
+                      {tour.availableSeats> 0 ? 'Book Now' : 'Sold Out'}
                     </button>
                     <button
                       className="w-1/2 bg-gray-200 text-gray-700 py-2 rounded-md hover:bg-gray-300 transition-colors"

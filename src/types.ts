@@ -1,5 +1,3 @@
-
-
 // // src/types.ts
 // // src/types.ts
 // export interface Tour {
@@ -64,24 +62,13 @@
 // import photo10 from "./assets/images/tirhaltravel3.jpg";
 // import photo11 from "./assets/images/tirhaltravel4.jpg";
 // import photo12 from "./assets/images/tirhaltravel5.jpg";
-export interface Itinerary {
-  title: string;
-  dayNumber: number;
-  description: string;
-  startTime: string;
-  endTime: string;
-  location: string;
-  activities: string[];
-  includesBreakfast: boolean;
-  includesLunch: boolean;
-  includesDinner: boolean;
-  notes: string;
-}
 
+
+// src/types.ts
 export interface Tour {
   id: number;
   title: string;
-  description: string;
+  description?: string;
   price: number;
   startDate: string;
   endDate: string;
@@ -94,23 +81,22 @@ export interface Tour {
   destinationCityLat?: number;
   destinationCityLng?: number;
   transportationType: string;
-  coverImageUrl: string;
   amenities: string[];
   companyId?: number;
   companyName?: string;
-  profileImageUrl?: string;
-  companyProfileImageUrl?: string;
+  companyLogo?: string; 
   imageUrls: string[];
-  image?: string;
-  tags?: string[];
+   image?: string; // نضيفها كخاصية اختيارية
+  tags?: string[]; // نضيفها كخاصية اختيارية
+  itineraries?: {
+    dayNumber: number;
+    activities: string[];
+  }[];
   rating?: number;
-  itineraries?: Itinerary[];
-  categoryId?: number;
+  // يمكن إضافة حقول أخرى حسب الحاجة
 }
 
-
-
-
+// في ملف types.ts
 export interface Review {
   id: number;
   name: string; 

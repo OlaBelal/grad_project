@@ -1,6 +1,7 @@
 // services/calculationService.ts
 import { UserInteraction } from '../interfaces/userInteraction';
 
+// الأوزان 
 const WEIGHTS = {
   checkout: 1,
   favourite: 3,
@@ -23,5 +24,5 @@ export const calculateTotal = (interaction: UserInteraction): number => {
     total += WEIGHTS.booked;
   }
   
-  return parseFloat(total.toFixed(3));
+  return parseFloat(total.toFixed(3)); // تقريب إلى 3 منازل عشرية
 };

@@ -56,23 +56,14 @@ const RomanticDestination = () => {
           </div>
           <div className="relative">
             <img
-  src={
-    tour.coverImageUrl && tour.coverImageUrl.trim() !== ''
-      ? tour.coverImageUrl.startsWith('http')
-        ? tour.coverImageUrl
-        : `${API_BASE_URL}/${tour.coverImageUrl}`
-      : tour.imageUrls?.length > 0
-        ? tour.imageUrls[0].startsWith('http')
-          ? tour.imageUrls[0]
-          : `${API_BASE_URL}/${tour.imageUrls[0]}`
-        : `${API_BASE_URL}/default-tour.jpg`
-  }
-  alt="Romantic destination"
-  className="rounded-lg shadow-xl w-full h-80 object-cover"
-  onError={(e) => {
-    (e.target as HTMLImageElement).src = `${API_BASE_URL}/default-tour.jpg`;
-  }}
-/>
+              src={
+                tour.imageUrls?.[0]?.startsWith('http')
+                  ? tour.imageUrls[0]
+                  : `${API_BASE_URL}/${tour.imageUrls?.[0] || 'default-tour.jpg'}`
+              }
+              alt="Romantic destination"
+              className="rounded-lg shadow-xl w-full h-80 object-cover"
+            />
             {tour.companyName && (
               <div
                 className="absolute -bottom-6 -left-6 bg-white p-4 rounded-lg shadow-lg cursor-pointer"
@@ -80,7 +71,11 @@ const RomanticDestination = () => {
               >
                 <div className="flex items-center space-x-4">
                   <img
-                    src={tour.companyProfileImageUrl || '/images/default-company.png'}
+                    src={
+                      tour.companyLogo?.startsWith('http')
+                        ? tour.companyLogo
+                        : `${API_BASE_URL}/${tour.companyLogo || 'default-company.png'}`
+                    }
                     alt={tour.companyName}
                     className="w-16 h-16 rounded-full object-cover"
                   />

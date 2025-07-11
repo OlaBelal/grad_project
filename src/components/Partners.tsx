@@ -1,75 +1,41 @@
-import  { useEffect, useState } from 'react';
+//C:\Users\olabe\Downloads\SecandDemo\src\components\Partners.tsx
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { getCompanies, Company } from '../services/api';
 
 const Partners = () => {
   const [companies, setCompanies] = useState<Company[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
-        setIsLoading(true);
         const data = await getCompanies();
         setCompanies(data.items);
-        setError(null);
       } catch (error) {
         console.error('Error fetching companies:', error);
-        setError('Failed to load companies. Please try again later.');
-      } finally {
-        setIsLoading(false);
       }
     };
 
     fetchCompanies();
   }, []);
 
-  if (isLoading) {
-    return (
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p>Loading companies...</p>
-        </div>
-      </section>
-    );
-  }
-
-  if (error) {
-    return (
-      <section className="py-12 bg-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-red-500">{error}</p>
-        </div>
-      </section>
-    );
-  }
-
   return (
     <section className="py-12 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-8">
-          <h2 className="text-xl font-medium text-gray-600">
-            Trusted by World-Leading Travel Companies
-          </h2>
+          <h2 className="text-xl font-medium text-gray-600">Trusted by World-Leading Travel Companies</h2>
         </div>
         
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-8 items-center justify-items-center">
           {companies.map((company) => (
-            <Link 
-              key={company.id} 
-              to={`/companies/${company.id}`}
-              className="w-32 h-16 relative grayscale hover:grayscale-0 transition-all duration-300 transform hover:scale-110"
-            >
-              <img
-                src={company.profileImageUrl || 'https://via.placeholder.com/128x64?text=Logo'}
-                alt={company.companyName}
-                className="w-full h-full object-contain"
-                onError={(e) => {
-                  const target = e.target as HTMLImageElement;
-                  target.src = 'https://via.placeholder.com/128x64?text=Logo';
-                }}
-              />
+            <Link key={company.id} to={`/companies/${company.id}`}>
+              <div className="w-32 h-16 relative grayscale hover:grayscale-0 transition-all duration-300 transform hover:scale-110">
+                <img
+                  src={company.profileImageUrl || 'default-logo.jpg'} // Provide a default logo if the company logo is not available
+                  alt={company.companyName}
+                  className="w-full h-full object-contain"
+                />
+              </div>
             </Link>
           ))}
         </div>
@@ -79,6 +45,9 @@ const Partners = () => {
 };
 
 export default Partners;
+
+
+
 
 
 
